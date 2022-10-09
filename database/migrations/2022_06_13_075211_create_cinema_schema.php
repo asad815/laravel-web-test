@@ -36,6 +36,65 @@ class CreateCinemaSchema extends Migration
      */
     public function up()
     {
+        //Create movies table
+        Schema::create('movies', function(Blueprint $table){
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+        
+        //Create cinemas table
+        Schema::create('cinemas', function(Blueprint $table){
+            $table->id();
+            $table->string('name');
+            $table->string('location');
+            $table->timestamps();
+        });
+        
+        //Cinema Halls
+        Schema::create('cinema_halls', function(Blueprint $table){
+            $table->id();
+            $table->string('hall_name');
+            $table->integer('cinema_id');
+            $table->integer('total_seats');
+            $table->foreign('cinema_id')->references('id')->on('cinemas')->onDelete('cascade');;
+        });
+        
+        //Hall seat plans
+        Schema::create('hall_ticket_seat_pricings', function(Blueprint $table){
+            $table->id();
+            $table->interger('hall_id');
+            $table->integer('seat_type');
+            $table->integer('starting_seat_number');
+            $table->integer('end_seat_number');
+            $table->integer('seat_ticket_price');
+            $table->foreign('hall_id')->references('id')->on('cinema_halls')->onDelete('cascade');;
+        });
+        
+        //Shows table
+        Schema::create('shows', function(Blueprint $table){
+            $table->id();
+            $table->integer('movie_id');
+            $table->integer('cinema_id');
+            $table->integer('hall_id');
+            $table->date('show_date');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time');
+            $table->foreign('movie_id')->references('id')->on('moviess')->onDelete('cascade');
+            $table->foreign('cinema_id')->references('id')->on('cinemas')->onDelete('cascade');
+            $table->foreign('hall_id')->references('id')->on('cinema_halls')->onDelete('cascade');
+        });
+
+        //Bookings
+        Schema::create('bookings', function(Blueprint $table){
+            $table->id();
+            $table->integer('user_id');
+            $table->double('show_id');
+            $table->double('seat_number');
+            $table->double('price');
+            $table->foreign('show_id')->references('id')->on('shows');
+            $table->foreign('user_id')->references('id')->on('users');
+        });
         throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
     }
 
